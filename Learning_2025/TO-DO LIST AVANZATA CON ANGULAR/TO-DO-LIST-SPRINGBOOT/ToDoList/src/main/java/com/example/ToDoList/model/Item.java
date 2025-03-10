@@ -23,7 +23,7 @@ public class Item {
 	@Column(name = "CATEGORY")
 	private String category;
 	@Column(name = "DONE")
-	private Boolean done; 
+	private Boolean done; 	
 	
 	public Item() {}
 	

@@ -1,36 +1,66 @@
 package com.example.ToDoList.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.example.ToDoList.View.itemTranslatedView;
-import com.example.ToDoList.dto.ItemDTO;
+import com.example.ToDoList.dto.ItemFilterDto;
+import com.example.ToDoList.dto.ItemOutputDto;
 import com.example.ToDoList.dto.ItemUpdateDTO;
 import com.example.ToDoList.model.Item;
-import com.example.ToDoList.model.itemTranslate;
 import com.example.ToDoList.repository.ItemRepository;
 import com.example.ToDoList.repository.ItemTranslatedViewRepository;
+
+import specification.ItemSpecification;
+import specification.ItemViewSpecification;
 
 @Service
 public class ItemService {
 	private final ItemRepository itemRepository;
 	private final ItemTranslatedViewRepository itemTranslatedViewRepository;
+	//private final ItemViewSpecification itemViewSpecification; 
 	
 	public ItemService(ItemRepository itemRepository, ItemTranslatedViewRepository itemTranslatedViewRepository) {
 		this.itemRepository = itemRepository; 
 		this.itemTranslatedViewRepository = itemTranslatedViewRepository;
+		//this.itemViewSpecification = itemViewSpecification; 
 	}
 	
-	public List<ItemDTO> all(ItemDTO entity) {
-
-		if (entity.isEnglish()) {
-			// creare predicato in specification per andare verso la vista			
-		} else {
-			// creare predicato in specification per andare verso la tabella
+	public List<ItemOutputDto> getAll(ItemFilterDto itemFilterDto){		
+		
+		if (itemFilterDto.getIsEnglish()) {	
+			ItemViewSpecification itemViewSpecification = new ItemViewSpecification(itemFilterDto); 			
+			return getOutFromPagedResultsItemView(itemTranslatedViewRepository.findAll(itemViewSpecification));			
 		}
-
-		return null; 
+		
+		ItemSpecification itemSpecification = new ItemSpecification(itemFilterDto); 
+		return getOutFromPagedResultsItem(itemRepository.findAll(itemSpecification)); 
+				 
+	}
+	
+	private List<ItemOutputDto> getOutFromPagedResultsItemView(List<itemTranslatedView> allList) {
+		List<ItemOutputDto> allPouts = new ArrayList<ItemOutputDto>();
+		for (itemTranslatedView p : allList) {
+			
+			ItemOutputDto out = new ItemOutputDto();
+			BeanUtils.copyProperties(p, out);
+			allPouts.add(out);
+		}
+		return allPouts;
+	}
+	
+	private List<ItemOutputDto> getOutFromPagedResultsItem(List<Item> allList) {
+		List<ItemOutputDto> allPouts = new ArrayList<ItemOutputDto>();
+		//System.out.print(allList);
+		for (Item p : allList) {
+			ItemOutputDto out = new ItemOutputDto();
+			BeanUtils.copyProperties(p, out);
+			allPouts.add(out);
+		}
+		return allPouts;
 	}
 
 	public List<Item> getItems(){

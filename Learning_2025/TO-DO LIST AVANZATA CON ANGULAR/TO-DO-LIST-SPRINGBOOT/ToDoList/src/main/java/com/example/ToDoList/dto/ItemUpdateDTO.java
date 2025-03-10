@@ -1,6 +1,5 @@
 package com.example.ToDoList.dto;
 
-import com.example.ToDoList.model.Item;
 
 public class ItemUpdateDTO {
 

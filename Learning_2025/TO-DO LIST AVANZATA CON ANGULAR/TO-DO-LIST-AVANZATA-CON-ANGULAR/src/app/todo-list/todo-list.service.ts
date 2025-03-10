@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TodoitemsService } from '../shared/todoitems.service.ts.service';
+import type {TodoItemFilterDto} from '../shared/todo-item-filter-dto';
 @Injectable({
   providedIn: 'root',
 })
@@ -13,11 +14,10 @@ export class TodoListService {
    * @returns La lista degli items dal DB oppure la View se la lingua è impostata ad inglese
    */
   getTodoItems() {
-    if (this.todoItemsService.getLanguage()) {
-      //TODO: Implementare la chiamata alla view
-      return this.todoItemsService.doHttpRequest_UNICA("POST", "itemController");
-    } else {
-      return this.todoItemsService.doHttpRequest_UNICA("POST", "itemController");
-    }
+    const filterDto: TodoItemFilterDto = {
+      isEnglish: this.todoItemsService.getLanguage(),
+    };
+    return this.todoItemsService.doHttpRequest_UNICA("POST", "itemController/all", filterDto);
   }
 }
+ 

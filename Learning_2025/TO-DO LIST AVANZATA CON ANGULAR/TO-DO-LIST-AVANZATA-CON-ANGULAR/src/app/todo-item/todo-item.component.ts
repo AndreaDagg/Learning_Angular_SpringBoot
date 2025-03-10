@@ -40,6 +40,7 @@ export class TodoItemComponent implements OnInit {
   onDone() {
     //this.todoitemsService.setIfDone(this.todoItem.id, !this.todoItem.done);
     this.todoItemService.updateDone(this.todoItem.id, !this.todoItem.done);
+    debugger;
     this.deleteCheckedView = !this.deleteCheckedView;
 
   }

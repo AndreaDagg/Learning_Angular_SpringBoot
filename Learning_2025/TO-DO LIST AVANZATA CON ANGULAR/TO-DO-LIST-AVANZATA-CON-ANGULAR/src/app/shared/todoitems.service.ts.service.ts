@@ -1,6 +1,9 @@
 import { EventEmitter, Injectable, Output, signal, Input } from '@angular/core';
 import type { TodoItem } from './todo-item.model';
+import {TodoItemFilterDto} from './todo-item-filter-dto';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
+
+
 
 
 @Injectable({
@@ -15,6 +18,19 @@ export class TodoitemsService {
   private isEnglish: boolean = false;
 
   constructor(private httpClient: HttpClient) {}
+
+  public static formFilterValidators(dataParam: TodoItemFilterDto): TodoItemFilterDto {
+    let formFilterValidators = {
+      'title': dataParam.title || "", 
+      'description': dataParam.description || "",
+      'done': dataParam.done || undefined,
+      'category': dataParam.category || "",
+      'isEnglish': dataParam.isEnglish || undefined, 
+      'id': dataParam.id !== null ? dataParam.id : undefined
+    };
+    return formFilterValidators;
+    
+  }
 
   /**
    *  - - - - CHIAMATA GENERICA - - - -
@@ -62,7 +78,7 @@ export class TodoitemsService {
       headers.map((item) => {
         httpRequest = httpRequest.clone({
           headers: httpRequest.headers.set(item.key, item.value),
-        });
+        });         
       });
     } else {
       httpRequest = httpRequest.clone({
@@ -70,6 +86,7 @@ export class TodoitemsService {
       });
     }
 
+    console.log('SERVICE GENERAL => doHttpRequest_UNICA => httpRequest', httpRequest, 'dataParam', dataParam);
     return new Promise((resolve, reject) => {
       const rq = this.httpClient.request(httpRequest);
       if (rq) {
