@@ -1,5 +1,6 @@
 package com.example.ToDoList.service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import com.example.ToDoList.dto.ItemFilterDto;
 import com.example.ToDoList.dto.ItemOutputDto;
 import com.example.ToDoList.dto.ItemUpdateDTO;
 import com.example.ToDoList.model.Item;
+import com.example.ToDoList.model.itemTranslate;
 import com.example.ToDoList.repository.ItemRepository;
+import com.example.ToDoList.repository.ItemTranslateRepository;
 import com.example.ToDoList.repository.ItemTranslatedViewRepository;
 
 import specification.ItemSpecification;
@@ -21,11 +24,13 @@ import specification.ItemViewSpecification;
 public class ItemService {
 	private final ItemRepository itemRepository;
 	private final ItemTranslatedViewRepository itemTranslatedViewRepository;
+	private final ItemTranslateRepository itemTranslateRepository; 
 	//private final ItemViewSpecification itemViewSpecification; 
 	
-	public ItemService(ItemRepository itemRepository, ItemTranslatedViewRepository itemTranslatedViewRepository) {
+	public ItemService(ItemRepository itemRepository, ItemTranslatedViewRepository itemTranslatedViewRepository, ItemTranslateRepository itemTranslateRepository) {
 		this.itemRepository = itemRepository; 
 		this.itemTranslatedViewRepository = itemTranslatedViewRepository;
+		this.itemTranslateRepository = itemTranslateRepository; 
 		//this.itemViewSpecification = itemViewSpecification; 
 	}
 	
@@ -33,11 +38,13 @@ public class ItemService {
 		
 		if (itemFilterDto.getIsEnglish()) {	
 			ItemViewSpecification itemViewSpecification = new ItemViewSpecification(itemFilterDto); 			
-			return getOutFromPagedResultsItemView(itemTranslatedViewRepository.findAll(itemViewSpecification));			
+			//return getOutFromPagedResultsItemView(itemTranslatedViewRepository.findAll(itemViewSpecification));	
+			return getOutFromPageResultsGeneric(itemTranslatedViewRepository.findAll(itemViewSpecification)); 
 		}
 		
 		ItemSpecification itemSpecification = new ItemSpecification(itemFilterDto); 
-		return getOutFromPagedResultsItem(itemRepository.findAll(itemSpecification)); 
+		//return getOutFromPagedResultsItem(itemRepository.findAll(itemSpecification));
+		return getOutFromPageResultsGeneric(itemRepository.findAll(itemSpecification)); 
 				 
 	}
 	
@@ -62,6 +69,31 @@ public class ItemService {
 		}
 		return allPouts;
 	}
+	
+	private <T> List<ItemOutputDto> getOutFromPageResultsGeneric(List<T> allList) {
+	    List<ItemOutputDto> allPouts = new ArrayList<ItemOutputDto>();
+	    for (T p : allList) {
+	        ItemOutputDto out = new ItemOutputDto();
+	       
+	        BeanUtils.copyProperties(p, out);
+	        
+	        // Forza la copia dell'ID (assumendo che 'id' sia un campo comune nelle entità)
+	        try {
+	            Field idField = p.getClass().getDeclaredField("id");  // Ottieni il campo id dall'oggetto generico
+	            idField.setAccessible(true); // Rendi il campo accessibile
+	            Object idValue = idField.get(p); // Ottieni il valore dell'id
+
+	            // Imposta il valore dell'id nell'oggetto di destinazione (ItemOutputDto)
+	            out.setId((Integer) idValue); // Assumendo che l'ID sia di tipo Integer
+	        } catch (NoSuchFieldException | IllegalAccessException e) {
+	            e.printStackTrace();
+	        }
+
+	        allPouts.add(out);
+	    }
+	    return allPouts;
+	}
+
 
 	public List<Item> getItems(){
 		return itemRepository.findAll();
@@ -88,6 +120,10 @@ public class ItemService {
 	}
 	
 	public void deleteItem(Integer id) {
+		itemTranslate itemTraslater = itemTranslateRepository.findByIdIta(id);
+		if(itemTraslater != null) {
+			itemTranslateRepository.delete(itemTraslater);
+		}
 		Item item = itemRepository.findById(id).orElseThrow(() -> new IllegalStateException(id + "not found"));
 		itemRepository.delete(item);
 	}

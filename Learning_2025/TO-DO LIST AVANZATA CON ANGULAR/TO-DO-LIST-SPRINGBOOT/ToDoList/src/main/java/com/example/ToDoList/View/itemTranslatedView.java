@@ -1,5 +1,7 @@
 package com.example.ToDoList.View;
 
+import java.util.Objects;
+
 import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Column;
@@ -23,7 +25,7 @@ public class itemTranslatedView {
     @Column(name = "TITLE", nullable = false)
     private String title; 
     @Column(name = "DESCRIPTION", nullable = false)
-    private String decsription;
+    private String description;
     @Column(name = "CATEGORY", nullable = false)
     private String category;
     @Column(name = "DONE", nullable = false)
@@ -37,91 +39,72 @@ public class itemTranslatedView {
     public itemTranslatedView() {
     }
 
-    public itemTranslatedView(Integer id, String title, String decsription, String category, boolean done) {
+    public itemTranslatedView(Integer id, String title, String description, String category, boolean done) {
         this.id = id;
         this.title = title;
-        this.decsription = decsription;
+        this.description = description;
         this.category = category;
         this.done = done;
     }
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public boolean isDone() {
+		return done;
+	}
+
+	public void setDone(boolean done) {
+		this.done = done;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(category, description, done, id, title);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		itemTranslatedView other = (itemTranslatedView) obj;
+		return Objects.equals(category, other.category) && Objects.equals(description, other.description)
+				&& done == other.done && Objects.equals(id, other.id) && Objects.equals(title, other.title);
+	}
     
-    public Integer getId() {
-        return id;
+    
+    
     }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getDecsription() {
-        return decsription;
-    }
-    public void setDecsription(String decsription) {
-        this.decsription = decsription;
-    }
-    public String getCategory() {
-        return category;
-    }
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    public boolean isDone() {
-        return done;
-    }
-    public void setDone(boolean done) {
-        this.done = done;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((decsription == null) ? 0 : decsription.hashCode());
-        result = prime * result + ((category == null) ? 0 : category.hashCode());
-        result = prime * result + (done ? 1231 : 1237);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        itemTranslatedView other = (itemTranslatedView) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (decsription == null) {
-            if (other.decsription != null)
-                return false;
-        } else if (!decsription.equals(other.decsription))
-            return false;
-        if (category == null) {
-            if (other.category != null)
-                return false;
-        } else if (!category.equals(other.category))
-            return false;
-        if (done != other.done)
-            return false;
-        return true;
-    }
-
-
-
-}
