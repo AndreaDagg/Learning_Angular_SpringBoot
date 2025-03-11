@@ -27,20 +27,20 @@ export class TodoItemComponent implements OnInit {
   //@Output() delete = new EventEmitter<string>();
 
 
-  deleteChecked = true;
+  deleteCheckedView = true;
 
   constructor(private todoItemService: TodoItemService) {}
 
   ngOnInit() {
     if (this.todoItem.done == true) {
-      this.deleteChecked = false;
+      this.deleteCheckedView = false;
     }
   }
 
   onDone() {
     //this.todoitemsService.setIfDone(this.todoItem.id, !this.todoItem.done);
     this.todoItemService.updateDone(this.todoItem.id, !this.todoItem.done);
-    this.deleteChecked = !this.deleteChecked;
+    this.deleteCheckedView = !this.deleteCheckedView;
 
   }
 

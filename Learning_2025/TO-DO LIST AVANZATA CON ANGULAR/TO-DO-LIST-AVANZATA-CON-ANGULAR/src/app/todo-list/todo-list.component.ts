@@ -39,6 +39,7 @@ export class TodoListComponent implements OnInit {
   //todoItemsList = signal<TodoItem[]>([]);
 
   todoItemsList!: TodoItem[];
+  todoItemsListBK!: TodoItem[];
 
   private filterActive = signal<boolean>(true);
   private filterCompleted = signal<boolean>(true);
@@ -47,17 +48,10 @@ export class TodoListComponent implements OnInit {
     private todoListService: TodoListService,
     private toDoService: TodoitemsService,
   ) {
-    /* effect(() => {
-      console.log(
-        'Filter Active: ' +
-          this.filterActive +
-          '\nCompleted:' +
-          this.filterCompleted
-      );
-        
+    effect(() => {     
+      console.log("EFFECT => Act: "+ this.filterActive() + " Comp: " + this.filterCompleted());   
       this.filterdItems();
-
-    }); */
+    }); 
   }
 
   ngOnInit() {
@@ -76,6 +70,7 @@ export class TodoListComponent implements OnInit {
       const res = value as HttpResponse<any>;
       console.log(res.body);
       this.todoItemsList = res.body;
+      this.todoItemsListBK = res.body;
     });
   }
 
@@ -86,9 +81,8 @@ export class TodoListComponent implements OnInit {
     };
   }
 
-  //Qua settiamo aggiorniamo i nuovi valori dei filtri
+  //Qua settiamo aggiorniamo i nuovi valori dei filtri sotto applico i filtri
   onFilter(type: 'active' | 'completed') {
-    //console.log(this.filterActive + " " + this.filterCompleted);
     if (type === 'active') {
       this.filterActive.update((currentValue) => !currentValue);
     } else {
@@ -97,17 +91,18 @@ export class TodoListComponent implements OnInit {
   }
 
   filterdItems() {
+    this.todoItemsList = this.todoItemsListBK;
     this.todoItemsList = this.todoItemsList.filter((item) => {
-      if (this.filterCompleted) {
-        
-        return item.done === this.filterCompleted();
-      } else if (this.filterActive) {
-         
-        return item.done === this.filterActive();
-      } else {
-        
-        return item;
+      if (this.filterActive() && this.filterCompleted()) {
+        return item; 
+      } else if (this.filterCompleted() && !this.filterActive()) {      
+        return item.done === true;
+      } else if (this.filterActive() && !this.filterCompleted()) {         
+        return item.done === false;
+      } else if(!this.filterActive() && !this.filterCompleted()) {         
+        return false;
       }
+      return false; 
     });
   }
 }

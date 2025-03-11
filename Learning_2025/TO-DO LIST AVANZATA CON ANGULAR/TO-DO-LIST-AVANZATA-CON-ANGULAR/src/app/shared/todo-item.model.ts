@@ -1,6 +1,6 @@
 export interface TodoItem {
 
-    id: string ;
+    id: number ;
     title: string;
     description: string;
     done: boolean;

@@ -10,6 +10,13 @@ export class TodoFormService {
   constructor(private todoItemsService:TodoitemsService ) { }
 
   addNewItemQuery(item: TodoItemNoID){
-    return this.todoItemsService.doHttpRequestAddNewItem('itemController', item);
+    return this.todoItemsService.doHttpRequest_UNICA(
+      "POST",
+      "itemController/addNewItem",
+      item,
+      undefined,
+      undefined,
+      true
+    )
   }
 }
